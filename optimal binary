@@ -1,0 +1,50 @@
+public class OptimalBST {
+    
+    // Function to calculate optimal binary search tree
+    public static int optimalBST(int keys[], int freq[], int n) {
+        // Create a 2D table to store the cost of optimal BST
+        int cost[][] = new int[n + 1][n + 1];
+
+        // Initialize all values in cost[][] as 0
+        for (int i = 0; i < n; i++)
+            cost[i][i] = freq[i];
+
+        // Compute values for all chains of length 2 to n
+        for (int chainLen = 2; chainLen <= n; chainLen++) {
+            for (int i = 0; i <= n - chainLen + 1; i++) {
+                int j = i + chainLen - 1;
+                cost[i][j] = Integer.MAX_VALUE;
+
+                // Try making all keys in interval [i, j] as root
+                for (int r = i; r <= j; r++) {
+                    int c = ((r > i) ? cost[i][r - 1] : 0) +
+                            ((r < j) ? cost[r + 1][j] : 0) +
+                            sum(freq, i, j);
+                    if (c < cost[i][j])
+                        cost[i][j] = c;
+                }
+            }
+        }
+
+        // Return the cost of optimal BST
+        return cost[0][n - 1];
+    }
+
+    // Function to calculate the sum of frequencies between indices i and j
+    public static int sum(int freq[], int i, int j) {
+        int s = 0;
+        for (int k = i; k <= j; k++) {
+            if (k >= freq.length) continue;
+            s += freq[k];
+        }
+        return s;
+    }
+
+    public static void main(String[] args) {
+        int keys[] = {10, 12, 20};
+        int freq[] = {34, 8, 50};
+        int n = keys.length;
+        int result = optimalBST(keys, freq, n);
+        System.out.println("The cost of the optimal BST is: " + result);
+    }
+}
